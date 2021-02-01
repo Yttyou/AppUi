@@ -1,0 +1,5 @@
+platformName: Android
+appActivity: com.suncity.sunpeople.ui.login.SplashActivity
+appPackage: com.suncity.sunpeople.qa
+platformVersion: 10.0.0
+deviceName: 4255484833573398

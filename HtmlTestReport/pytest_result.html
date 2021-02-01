@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test Report</title>
+    <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function find_all(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sort_column(elem) {
+    toggle_sort_states(elem);
+    var colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    var key;
+    if (elem.classList.contains('numeric')) {
+        key = key_num;
+    } else if (elem.classList.contains('result')) {
+        key = key_result;
+    } else {
+        key = key_alpha;
+    }
+    sort_table(elem, key(colIndex));
+}
+
+function show_all_extras() {
+    find_all('.col-result').forEach(show_extras);
+}
+
+function hide_all_extras() {
+    find_all('.col-result').forEach(hide_extras);
+}
+
+function show_extras(colresult_elem) {
+    var extras = colresult_elem.parentNode.nextElementSibling;
+    var expandcollapse = colresult_elem.firstElementChild;
+    extras.classList.remove("collapsed");
+    expandcollapse.classList.remove("expander");
+    expandcollapse.classList.add("collapser");
+}
+
+function hide_extras(colresult_elem) {
+    var extras = colresult_elem.parentNode.nextElementSibling;
+    var expandcollapse = colresult_elem.firstElementChild;
+    extras.classList.add("collapsed");
+    expandcollapse.classList.remove("collapser");
+    expandcollapse.classList.add("expander");
+}
+
+function show_filters() {
+    var filter_items = document.getElementsByClassName('filter');
+    for (var i = 0; i < filter_items.length; i++)
+        filter_items[i].hidden = false;
+}
+
+function add_collapse() {
+    // Add links for show/hide all
+    var resulttable = find('table#results-table');
+    var showhideall = document.createElement("p");
+    showhideall.innerHTML = '<a href="javascript:show_all_extras()">Show all details</a> / ' +
+                            '<a href="javascript:hide_all_extras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    find_all('.col-result').forEach(function(elem) {
+        var collapsed = get_query_parameter('collapsed') || 'Passed';
+        var extras = elem.parentNode.nextElementSibling;
+        var expandcollapse = document.createElement("span");
+        if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add("collapsed");
+            expandcollapse.classList.add("expander");
+        } else {
+            expandcollapse.classList.add("collapser");
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener("click", function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains("collapsed")) {
+                show_extras(event.currentTarget);
+            } else {
+                hide_extras(event.currentTarget);
+            }
+        });
+    })
+}
+
+function get_query_parameter(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () {
+    reset_sort_headers();
+
+    add_collapse();
+
+    show_filters();
+
+    toggle_sort_states(find('.initial-sort'));
+
+    find_all('.sortable').forEach(function(elem) {
+        elem.addEventListener("click",
+                              function(event) {
+                                  sort_column(elem);
+                              }, false)
+    });
+
+};
+
+function sort_table(clicked, key_func) {
+    var rows = find_all('.results-table-row');
+    var reversed = !clicked.classList.contains('asc');
+    var sorted_rows = sort(rows, key_func, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    var thead = document.getElementById("results-table-head");
+    document.getElementById('results-table').remove();
+    var parent = document.createElement("table");
+    parent.id = "results-table";
+    parent.appendChild(thead);
+    sorted_rows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName("BODY")[0].appendChild(parent);
+}
+
+function sort(items, key_func, reversed) {
+    var sort_array = items.map(function(item, i) {
+        return [key_func(item), i];
+    });
+
+    sort_array.sort(function(a, b) {
+        var key_a = a[0];
+        var key_b = b[0];
+
+        if (key_a == key_b) return 0;
+
+        if (reversed) {
+            return (key_a < key_b ? 1 : -1);
+        } else {
+            return (key_a > key_b ? 1 : -1);
+        }
+    });
+
+    return sort_array.map(function(item) {
+        var index = item[1];
+        return items[index];
+    });
+}
+
+function key_alpha(col_index) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[col_index].firstChild.data.toLowerCase();
+    };
+}
+
+function key_num(col_index) {
+    return function(elem) {
+        return parseFloat(elem.childNodes[1].childNodes[col_index].firstChild.data);
+    };
+}
+
+function key_result(col_index) {
+    return function(elem) {
+        var strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+                       'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[col_index].firstChild.data);
+    };
+}
+
+function reset_sort_headers() {
+    find_all('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    find_all('.sortable').forEach(function(elem) {
+        var icon = document.createElement("div");
+        icon.className = "sort-icon";
+        icon.textContent = "vvv";
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove("desc", "active");
+        elem.classList.add("asc", "inactive");
+    });
+}
+
+function toggle_sort_states(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        reset_sort_headers();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function is_all_rows_hidden(value) {
+  return value.hidden == false;
+}
+
+function filter_table(elem) {
+    var outcome_att = "data-test-result";
+    var outcome = elem.getAttribute(outcome_att);
+    class_outcome = outcome + " results-table-row";
+    var outcome_rows = document.getElementsByClassName(class_outcome);
+
+    for(var i = 0; i < outcome_rows.length; i++){
+        outcome_rows[i].hidden = !elem.checked;
+    }
+
+    var rows = find_all('.results-table-row').filter(is_all_rows_hidden);
+    var all_rows_hidden = rows.length == 0 ? true : false;
+    var not_found_message = document.getElementById("not-found-message");
+    not_found_message.hidden = !all_rows_hidden;
+}
+</script>
+    <h1>pytest_result.html</h1>
+    <p>Report generated on 08-Jul-2020 at 19:50:18 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v2.0.0</p>
+    <h2>Environment</h2>
+    <table id="environment">
+      <tr>
+        <td>JAVA_HOME</td>
+        <td>/Library/Java/JavaVirtualMachines/jdk1.8.0_231.jdk/Contents/Home</td></tr>
+      <tr>
+        <td>Packages</td>
+        <td>{&apos;pytest&apos;: &apos;5.2.4&apos;, &apos;py&apos;: &apos;1.8.0&apos;, &apos;pluggy&apos;: &apos;0.13.0&apos;}</td></tr>
+      <tr>
+        <td>Platform</td>
+        <td>Darwin-19.2.0-x86_64-i386-64bit</td></tr>
+      <tr>
+        <td>Plugins</td>
+        <td>{&apos;variables&apos;: &apos;1.9.0&apos;, &apos;html&apos;: &apos;2.0.0&apos;, &apos;ordering&apos;: &apos;0.6&apos;, &apos;rerunfailures&apos;: &apos;7.0&apos;, &apos;allure-pytest&apos;: &apos;2.8.6&apos;, &apos;metadata&apos;: &apos;1.8.0&apos;}</td></tr>
+      <tr>
+        <td>Python</td>
+        <td>3.7.5</td></tr></table>
+    <h2>Summary</h2>
+    <p>1 tests ran in 62.76 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">1 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>, <input checked="true" class="filter" data-test-result="rerun" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="rerun">0 rerun</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable numeric" col="duration">Duration</th>
+          <th>Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">TestCases/test_search.py::TestNfPostTxt::test_app_subscript</td>
+          <td class="col-duration">19.53</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> -----------------------------Captured stderr setup------------------------------ <br/> Wed, 08 Jul 2020 19:49:16  INFO conftest.py startApp_withReset [ line:36 ] 读取当前执行测试机配置文件路径为：&#x27;/Users/ytt/Documents/neptune/testing-neptune/Caps/bc_app_config.yaml&#x27;
+ Wed, 08 Jul 2020 19:49:16  INFO conftest.py startApp_withReset [ line:45 ] 输出读取到的手机配置信息为：
+ Wed, 08 Jul 2020 19:49:16  INFO conftest.py startApp_withReset [ line:46 ] {&#x27;platformName&#x27;: &#x27;Android&#x27;, &#x27;appActivity&#x27;: &#x27;com.suncity.sunpeople.ui.login.SplashActivity&#x27;, &#x27;appPackage&#x27;: &#x27;com.suncity.sunpeople.qa&#x27;, &#x27;platformVersion&#x27;: &#x27;10.0.0&#x27;, &#x27;deviceName&#x27;: &#x27;4255484833573398&#x27;, &#x27;udid&#x27;: &#x27;4255484833573398&#x27;, &#x27;automationName&#x27;: &#x27;UiAutomator2&#x27;, &#x27;unicodeKeyboard&#x27;: True, &#x27;resetKeyboard&#x27;: True, &#x27;noReset&#x27;: True}
+ Wed, 08 Jul 2020 19:49:29  INFO conftest.py startApp_withReset [ line:50 ] 脚本开始执行时间：2020-07-08 19:49:29
+ Wed, 08 Jul 2020 19:49:30  INFO BasePage.py get_element [ line:220 ] 查找：是否踢出提示弹框：开始查找元素：(&#x27;id&#x27;, &#x27;android:id/button1&#x27;)
+ Wed, 08 Jul 2020 19:49:30  ERROR BasePage.py get_element [ line:224 ] 查找元素-(&#x27;id&#x27;, &#x27;android:id/button1&#x27;)失败！！
+Traceback (most recent call last):
+  File &quot;/Users/ytt/Documents/neptune/testing-neptune/Common/BasePage.py&quot;, line 222, in get_element
+    return self.driver.find_element(*locator)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/webdriver.py&quot;, line 276, in find_element
+    &#x27;value&#x27;: value})[&#x27;value&#x27;]
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py&quot;, line 321, in execute
+    self.error_handler.check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 29, in check_response
+    raise wde
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 24, in check_response
+    super(MobileErrorHandler, self).check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/errorhandler.py&quot;, line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: An element could not be located on the page using the given search parameters.
+
+ Wed, 08 Jul 2020 19:49:30  INFO BasePage.py screenshot [ line:476 ] 截图成功，图片路径为：/Users/ytt/Documents/neptune/testing-neptune/ScreenShot/查找：是否踢出提示弹框_20200708_194930.png
+ Wed, 08 Jul 2020 19:49:31  INFO conftest.py login [ line:80 ] 登录APP，账号：cfruit.qb01，密码：Aa123456
+ Wed, 08 Jul 2020 19:49:31  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:32  INFO BasePage.py wait_eleVisible [ line:128 ] 输入用户名: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/usernameView&#x27;) 已可见,等待起始时间：2020-07-08 19:49:31.940067,等待时长：0
+ Wed, 08 Jul 2020 19:49:32  INFO BasePage.py get_element [ line:220 ] 输入用户名：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/usernameView&#x27;)
+ Wed, 08 Jul 2020 19:49:32  INFO BasePage.py input_text [ line:252 ] 输入用户名: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/usernameView&#x27;) 输入内容-&quot;cfruit.qb01&quot;
+ Wed, 08 Jul 2020 19:49:32  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:33  INFO BasePage.py wait_eleVisible [ line:128 ] 输入密码: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/passwordView&#x27;) 已可见,等待起始时间：2020-07-08 19:49:32.799035,等待时长：0
+ Wed, 08 Jul 2020 19:49:33  INFO BasePage.py get_element [ line:220 ] 输入密码：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/passwordView&#x27;)
+ Wed, 08 Jul 2020 19:49:33  INFO BasePage.py input_text [ line:252 ] 输入密码: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/passwordView&#x27;) 输入内容-&quot;Aa123456&quot;
+ Wed, 08 Jul 2020 19:49:33  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:34  INFO BasePage.py wait_eleVisible [ line:128 ] 点击登录: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/loginView&#x27;) 已可见,等待起始时间：2020-07-08 19:49:33.578854,等待时长：0
+ Wed, 08 Jul 2020 19:49:34  INFO BasePage.py get_element [ line:220 ] 点击登录：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/loginView&#x27;)
+ Wed, 08 Jul 2020 19:49:34  INFO BasePage.py click_element [ line:270 ] 点击登录: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/loginView&#x27;) 点击操作。
+ Wed, 08 Jul 2020 19:49:34  INFO BasePage.py wait_element_vanish [ line:163 ] 等待元素消失...
+ Wed, 08 Jul 2020 19:49:36  INFO BasePage.py wait_element_vanish [ line:169 ] 等待數據加載完成...: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/loadingIco&#x27;) 已消失,等待起始时间：2020-07-08 19:49:34.302949,等待时长：1
+ Wed, 08 Jul 2020 19:49:36  INFO BasePage.py wait_element_vanish [ line:163 ] 等待元素消失...
+ Wed, 08 Jul 2020 19:49:36  INFO BasePage.py wait_element_vanish [ line:169 ] 登录后等待讯息加载完成: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/view_sun_toolbar_tv_title&#x27;) 已消失,等待起始时间：2020-07-08 19:49:36.188500,等待时长：0
+ Wed, 08 Jul 2020 19:49:36  INFO login_page.py wait_login_loading_tips [ line:44 ] 登录：讯息加载完成
+ Wed, 08 Jul 2020 19:49:36  INFO BasePage.py wait_eleVisible_pass [ line:137 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:41  ERROR BasePage.py wait_eleVisible_pass [ line:145 ] 等待元素-(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/statement_dialog_title&#x27;)可见异常！
+Traceback (most recent call last):
+  File &quot;/Users/ytt/Documents/neptune/testing-neptune/Common/BasePage.py&quot;, line 140, in wait_eleVisible_pass
+    WebDriverWait(self.driver, wait_times, poll_frequency).until(EC.visibility_of_element_located(locator))
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/support/wait.py&quot;, line 80, in until
+    raise TimeoutException(message, screen, stacktrace)
+selenium.common.exceptions.TimeoutException: Message: 
+
+ Wed, 08 Jul 2020 19:49:42  INFO BasePage.py screenshot [ line:476 ] 截图成功，图片路径为：/Users/ytt/Documents/neptune/testing-neptune/ScreenShot/判断：声明弹框(5s内有效)_20200708_194941.png
+ Wed, 08 Jul 2020 19:49:42  INFO BasePage.py get_element [ line:220 ] 判断：声明弹框(5s内有效)：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/statement_dialog_agree&#x27;)
+ Wed, 08 Jul 2020 19:49:42  ERROR BasePage.py get_element [ line:224 ] 查找元素-(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/statement_dialog_agree&#x27;)失败！！
+Traceback (most recent call last):
+  File &quot;/Users/ytt/Documents/neptune/testing-neptune/Common/BasePage.py&quot;, line 222, in get_element
+    return self.driver.find_element(*locator)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/webdriver.py&quot;, line 276, in find_element
+    &#x27;value&#x27;: value})[&#x27;value&#x27;]
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py&quot;, line 321, in execute
+    self.error_handler.check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 29, in check_response
+    raise wde
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 24, in check_response
+    super(MobileErrorHandler, self).check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/errorhandler.py&quot;, line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: An element could not be located on the page using the given search parameters.
+
+ Wed, 08 Jul 2020 19:49:43  INFO BasePage.py screenshot [ line:476 ] 截图成功，图片路径为：/Users/ytt/Documents/neptune/testing-neptune/ScreenShot/判断：声明弹框(5s内有效)_20200708_194942.png
+ Wed, 08 Jul 2020 19:49:43  INFO BasePage.py wait_ele_visible_pass [ line:108 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:43  INFO BasePage.py wait_ele_visible_pass [ line:114 ] 查找【聊天】按钮: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;) 已可见,等待起始时间：2020-07-08 19:49:43.648875,等待时长：0
+ Wed, 08 Jul 2020 19:49:43  INFO BasePage.py get_element [ line:220 ] ：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;)
+<br/> -------------------------------Captured log setup------------------------------- <br/>INFO     root:conftest.py:36 读取当前执行测试机配置文件路径为：&#x27;/Users/ytt/Documents/neptune/testing-neptune/Caps/bc_app_config.yaml&#x27;
+INFO     root:conftest.py:45 输出读取到的手机配置信息为：
+INFO     root:conftest.py:46 {&#x27;platformName&#x27;: &#x27;Android&#x27;, &#x27;appActivity&#x27;: &#x27;com.suncity.sunpeople.ui.login.SplashActivity&#x27;, &#x27;appPackage&#x27;: &#x27;com.suncity.sunpeople.qa&#x27;, &#x27;platformVersion&#x27;: &#x27;10.0.0&#x27;, &#x27;deviceName&#x27;: &#x27;4255484833573398&#x27;, &#x27;udid&#x27;: &#x27;4255484833573398&#x27;, &#x27;automationName&#x27;: &#x27;UiAutomator2&#x27;, &#x27;unicodeKeyboard&#x27;: True, &#x27;resetKeyboard&#x27;: True, &#x27;noReset&#x27;: True}
+INFO     root:conftest.py:50 脚本开始执行时间：2020-07-08 19:49:29
+INFO     root:BasePage.py:220 查找：是否踢出提示弹框：开始查找元素：(&#x27;id&#x27;, &#x27;android:id/button1&#x27;)
+ERROR    root:BasePage.py:224 查找元素-(&#x27;id&#x27;, &#x27;android:id/button1&#x27;)失败！！
+Traceback (most recent call last):
+  File &quot;/Users/ytt/Documents/neptune/testing-neptune/Common/BasePage.py&quot;, line 222, in get_element
+    return self.driver.find_element(*locator)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/webdriver.py&quot;, line 276, in find_element
+    &#x27;value&#x27;: value})[&#x27;value&#x27;]
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py&quot;, line 321, in execute
+    self.error_handler.check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 29, in check_response
+    raise wde
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 24, in check_response
+    super(MobileErrorHandler, self).check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/errorhandler.py&quot;, line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: An element could not be located on the page using the given search parameters.
+
+INFO     root:BasePage.py:476 截图成功，图片路径为：/Users/ytt/Documents/neptune/testing-neptune/ScreenShot/查找：是否踢出提示弹框_20200708_194930.png
+INFO     root:conftest.py:80 登录APP，账号：cfruit.qb01，密码：Aa123456
+INFO     root:BasePage.py:122 等待元素可见...
+INFO     root:BasePage.py:128 输入用户名: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/usernameView&#x27;) 已可见,等待起始时间：2020-07-08 19:49:31.940067,等待时长：0
+INFO     root:BasePage.py:220 输入用户名：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/usernameView&#x27;)
+INFO     root:BasePage.py:252 输入用户名: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/usernameView&#x27;) 输入内容-&quot;cfruit.qb01&quot;
+INFO     root:BasePage.py:122 等待元素可见...
+INFO     root:BasePage.py:128 输入密码: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/passwordView&#x27;) 已可见,等待起始时间：2020-07-08 19:49:32.799035,等待时长：0
+INFO     root:BasePage.py:220 输入密码：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/passwordView&#x27;)
+INFO     root:BasePage.py:252 输入密码: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/passwordView&#x27;) 输入内容-&quot;Aa123456&quot;
+INFO     root:BasePage.py:122 等待元素可见...
+INFO     root:BasePage.py:128 点击登录: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/loginView&#x27;) 已可见,等待起始时间：2020-07-08 19:49:33.578854,等待时长：0
+INFO     root:BasePage.py:220 点击登录：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/loginView&#x27;)
+INFO     root:BasePage.py:270 点击登录: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/loginView&#x27;) 点击操作。
+INFO     root:BasePage.py:163 等待元素消失...
+INFO     root:BasePage.py:169 等待數據加載完成...: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/loadingIco&#x27;) 已消失,等待起始时间：2020-07-08 19:49:34.302949,等待时长：1
+INFO     root:BasePage.py:163 等待元素消失...
+INFO     root:BasePage.py:169 登录后等待讯息加载完成: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/view_sun_toolbar_tv_title&#x27;) 已消失,等待起始时间：2020-07-08 19:49:36.188500,等待时长：0
+INFO     root:login_page.py:44 登录：讯息加载完成
+INFO     root:BasePage.py:137 等待元素可见...
+ERROR    root:BasePage.py:145 等待元素-(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/statement_dialog_title&#x27;)可见异常！
+Traceback (most recent call last):
+  File &quot;/Users/ytt/Documents/neptune/testing-neptune/Common/BasePage.py&quot;, line 140, in wait_eleVisible_pass
+    WebDriverWait(self.driver, wait_times, poll_frequency).until(EC.visibility_of_element_located(locator))
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/support/wait.py&quot;, line 80, in until
+    raise TimeoutException(message, screen, stacktrace)
+selenium.common.exceptions.TimeoutException: Message: 
+
+INFO     root:BasePage.py:476 截图成功，图片路径为：/Users/ytt/Documents/neptune/testing-neptune/ScreenShot/判断：声明弹框(5s内有效)_20200708_194941.png
+INFO     root:BasePage.py:220 判断：声明弹框(5s内有效)：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/statement_dialog_agree&#x27;)
+ERROR    root:BasePage.py:224 查找元素-(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/statement_dialog_agree&#x27;)失败！！
+Traceback (most recent call last):
+  File &quot;/Users/ytt/Documents/neptune/testing-neptune/Common/BasePage.py&quot;, line 222, in get_element
+    return self.driver.find_element(*locator)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/webdriver.py&quot;, line 276, in find_element
+    &#x27;value&#x27;: value})[&#x27;value&#x27;]
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py&quot;, line 321, in execute
+    self.error_handler.check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 29, in check_response
+    raise wde
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 24, in check_response
+    super(MobileErrorHandler, self).check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/errorhandler.py&quot;, line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: An element could not be located on the page using the given search parameters.
+
+INFO     root:BasePage.py:476 截图成功，图片路径为：/Users/ytt/Documents/neptune/testing-neptune/ScreenShot/判断：声明弹框(5s内有效)_20200708_194942.png
+INFO     root:BasePage.py:108 等待元素可见...
+INFO     root:BasePage.py:114 查找【聊天】按钮: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;) 已可见,等待起始时间：2020-07-08 19:49:43.648875,等待时长：0
+INFO     root:BasePage.py:220 ：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;)<br/> ------------------------------Captured stderr call------------------------------ <br/>mkdir: &#x27;/sdcard/.nomedia&#x27;: File exists
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py Start_recording [ line:638 ] 获取到录屏的adb进程信息：&#x27;  502 20311 20155   0  7:49PM ??         0:00.01 adb -s 4255484833573398 shell screenrecord --bit-rate 9000000 --time-limit 180 /sdcard/.nomedia/2020-07-08-19-49-47.mp4&#x27;
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py Start_recording [ line:641 ] 启动录屏功能...
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py wait_eleVisible [ line:128 ] 点击【最新动态】tab: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/tv_notifi&#x27;) 已可见,等待起始时间：2020-07-08 19:49:48.026712,等待时长：0
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py get_element [ line:220 ] 点击【最新动态】tab：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/tv_notifi&#x27;)
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py click_element [ line:270 ] 点击【最新动态】tab: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/tv_notifi&#x27;) 点击操作。
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py wait_element_vanish [ line:163 ] 等待元素消失...
+ Wed, 08 Jul 2020 19:49:50  INFO BasePage.py wait_element_vanish [ line:169 ] 加载load文案2: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/nf_loading_img&#x27;) 已消失,等待起始时间：2020-07-08 19:49:48.920933,等待时长：1
+ Wed, 08 Jul 2020 19:49:50  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:50  INFO BasePage.py wait_eleVisible [ line:128 ] 点击：通知tab: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/nf_tab_news_notify_img&#x27;) 已可见,等待起始时间：2020-07-08 19:49:50.354714,等待时长：0
+ Wed, 08 Jul 2020 19:49:50  INFO BasePage.py get_element [ line:220 ] 点击：通知tab：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/nf_tab_news_notify_img&#x27;)
+ Wed, 08 Jul 2020 19:49:51  INFO BasePage.py click_element [ line:270 ] 点击：通知tab: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/nf_tab_news_notify_img&#x27;) 点击操作。
+ Wed, 08 Jul 2020 19:49:54  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:54  INFO BasePage.py wait_eleVisible [ line:128 ] 点击【聊天】tab: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;) 已可见,等待起始时间：2020-07-08 19:49:54.091668,等待时长：0
+ Wed, 08 Jul 2020 19:49:54  INFO BasePage.py get_element [ line:220 ] 点击【聊天】tab：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;)
+ Wed, 08 Jul 2020 19:49:54  INFO BasePage.py click_element [ line:270 ] 点击【聊天】tab: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;) 点击操作。
+ Wed, 08 Jul 2020 19:49:54  INFO BasePage.py get_element [ line:220 ] 双击【聊天】tab：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;)
+<br/> -------------------------------Captured log call-------------------------------- <br/>INFO     root:BasePage.py:638 获取到录屏的adb进程信息：&#x27;  502 20311 20155   0  7:49PM ??         0:00.01 adb -s 4255484833573398 shell screenrecord --bit-rate 9000000 --time-limit 180 /sdcard/.nomedia/2020-07-08-19-49-47.mp4&#x27;
+INFO     root:BasePage.py:641 启动录屏功能...
+INFO     root:BasePage.py:122 等待元素可见...
+INFO     root:BasePage.py:128 点击【最新动态】tab: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/tv_notifi&#x27;) 已可见,等待起始时间：2020-07-08 19:49:48.026712,等待时长：0
+INFO     root:BasePage.py:220 点击【最新动态】tab：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/tv_notifi&#x27;)
+INFO     root:BasePage.py:270 点击【最新动态】tab: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/tv_notifi&#x27;) 点击操作。
+INFO     root:BasePage.py:163 等待元素消失...
+INFO     root:BasePage.py:169 加载load文案2: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/nf_loading_img&#x27;) 已消失,等待起始时间：2020-07-08 19:49:48.920933,等待时长：1
+INFO     root:BasePage.py:122 等待元素可见...
+INFO     root:BasePage.py:128 点击：通知tab: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/nf_tab_news_notify_img&#x27;) 已可见,等待起始时间：2020-07-08 19:49:50.354714,等待时长：0
+INFO     root:BasePage.py:220 点击：通知tab：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/nf_tab_news_notify_img&#x27;)
+INFO     root:BasePage.py:270 点击：通知tab: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/nf_tab_news_notify_img&#x27;) 点击操作。
+INFO     root:BasePage.py:122 等待元素可见...
+INFO     root:BasePage.py:128 点击【聊天】tab: 元素 (&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;) 已可见,等待起始时间：2020-07-08 19:49:54.091668,等待时长：0
+INFO     root:BasePage.py:220 点击【聊天】tab：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;)
+INFO     root:BasePage.py:270 点击【聊天】tab: 元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;) 点击操作。
+INFO     root:BasePage.py:220 双击【聊天】tab：开始查找元素：(&#x27;id&#x27;, &#x27;com.suncity.sunpeople.qa:id/rl_chat&#x27;)<br/></div></td></tr></tbody></table></body></html>

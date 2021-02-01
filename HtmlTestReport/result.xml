@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite errors="0" failures="0" hostname="yttde-MBP-328" name="pytest" skipped="0" tests="1" time="62.763" timestamp="2020-07-08T19:49:15.949500"><testcase classname="TestCases.test_search.TestNfPostTxt" file="TestCases/test_search.py" line="7105" name="test_app_subscript" time="61.878"><system-err> Wed, 08 Jul 2020 19:49:16  INFO conftest.py startApp_withReset [ line:36 ] 读取当前执行测试机配置文件路径为：&apos;/Users/ytt/Documents/neptune/testing-neptune/Caps/bc_app_config.yaml&apos;
+ Wed, 08 Jul 2020 19:49:16  INFO conftest.py startApp_withReset [ line:45 ] 输出读取到的手机配置信息为：
+ Wed, 08 Jul 2020 19:49:16  INFO conftest.py startApp_withReset [ line:46 ] {&apos;platformName&apos;: &apos;Android&apos;, &apos;appActivity&apos;: &apos;com.suncity.sunpeople.ui.login.SplashActivity&apos;, &apos;appPackage&apos;: &apos;com.suncity.sunpeople.qa&apos;, &apos;platformVersion&apos;: &apos;10.0.0&apos;, &apos;deviceName&apos;: &apos;4255484833573398&apos;, &apos;udid&apos;: &apos;4255484833573398&apos;, &apos;automationName&apos;: &apos;UiAutomator2&apos;, &apos;unicodeKeyboard&apos;: True, &apos;resetKeyboard&apos;: True, &apos;noReset&apos;: True}
+ Wed, 08 Jul 2020 19:49:29  INFO conftest.py startApp_withReset [ line:50 ] 脚本开始执行时间：2020-07-08 19:49:29
+ Wed, 08 Jul 2020 19:49:30  INFO BasePage.py get_element [ line:220 ] 查找：是否踢出提示弹框：开始查找元素：(&apos;id&apos;, &apos;android:id/button1&apos;)
+ Wed, 08 Jul 2020 19:49:30  ERROR BasePage.py get_element [ line:224 ] 查找元素-(&apos;id&apos;, &apos;android:id/button1&apos;)失败！！
+Traceback (most recent call last):
+  File &quot;/Users/ytt/Documents/neptune/testing-neptune/Common/BasePage.py&quot;, line 222, in get_element
+    return self.driver.find_element(*locator)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/webdriver.py&quot;, line 276, in find_element
+    &apos;value&apos;: value})[&apos;value&apos;]
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py&quot;, line 321, in execute
+    self.error_handler.check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 29, in check_response
+    raise wde
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 24, in check_response
+    super(MobileErrorHandler, self).check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/errorhandler.py&quot;, line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: An element could not be located on the page using the given search parameters.
+
+ Wed, 08 Jul 2020 19:49:30  INFO BasePage.py screenshot [ line:476 ] 截图成功，图片路径为：/Users/ytt/Documents/neptune/testing-neptune/ScreenShot/查找：是否踢出提示弹框_20200708_194930.png
+ Wed, 08 Jul 2020 19:49:31  INFO conftest.py login [ line:80 ] 登录APP，账号：cfruit.qb01，密码：Aa123456
+ Wed, 08 Jul 2020 19:49:31  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:32  INFO BasePage.py wait_eleVisible [ line:128 ] 输入用户名: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/usernameView&apos;) 已可见,等待起始时间：2020-07-08 19:49:31.940067,等待时长：0
+ Wed, 08 Jul 2020 19:49:32  INFO BasePage.py get_element [ line:220 ] 输入用户名：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/usernameView&apos;)
+ Wed, 08 Jul 2020 19:49:32  INFO BasePage.py input_text [ line:252 ] 输入用户名: 元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/usernameView&apos;) 输入内容-&quot;cfruit.qb01&quot;
+ Wed, 08 Jul 2020 19:49:32  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:33  INFO BasePage.py wait_eleVisible [ line:128 ] 输入密码: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/passwordView&apos;) 已可见,等待起始时间：2020-07-08 19:49:32.799035,等待时长：0
+ Wed, 08 Jul 2020 19:49:33  INFO BasePage.py get_element [ line:220 ] 输入密码：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/passwordView&apos;)
+ Wed, 08 Jul 2020 19:49:33  INFO BasePage.py input_text [ line:252 ] 输入密码: 元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/passwordView&apos;) 输入内容-&quot;Aa123456&quot;
+ Wed, 08 Jul 2020 19:49:33  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:34  INFO BasePage.py wait_eleVisible [ line:128 ] 点击登录: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/loginView&apos;) 已可见,等待起始时间：2020-07-08 19:49:33.578854,等待时长：0
+ Wed, 08 Jul 2020 19:49:34  INFO BasePage.py get_element [ line:220 ] 点击登录：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/loginView&apos;)
+ Wed, 08 Jul 2020 19:49:34  INFO BasePage.py click_element [ line:270 ] 点击登录: 元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/loginView&apos;) 点击操作。
+ Wed, 08 Jul 2020 19:49:34  INFO BasePage.py wait_element_vanish [ line:163 ] 等待元素消失...
+ Wed, 08 Jul 2020 19:49:36  INFO BasePage.py wait_element_vanish [ line:169 ] 等待數據加載完成...: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/loadingIco&apos;) 已消失,等待起始时间：2020-07-08 19:49:34.302949,等待时长：1
+ Wed, 08 Jul 2020 19:49:36  INFO BasePage.py wait_element_vanish [ line:163 ] 等待元素消失...
+ Wed, 08 Jul 2020 19:49:36  INFO BasePage.py wait_element_vanish [ line:169 ] 登录后等待讯息加载完成: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/view_sun_toolbar_tv_title&apos;) 已消失,等待起始时间：2020-07-08 19:49:36.188500,等待时长：0
+ Wed, 08 Jul 2020 19:49:36  INFO login_page.py wait_login_loading_tips [ line:44 ] 登录：讯息加载完成
+ Wed, 08 Jul 2020 19:49:36  INFO BasePage.py wait_eleVisible_pass [ line:137 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:41  ERROR BasePage.py wait_eleVisible_pass [ line:145 ] 等待元素-(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/statement_dialog_title&apos;)可见异常！
+Traceback (most recent call last):
+  File &quot;/Users/ytt/Documents/neptune/testing-neptune/Common/BasePage.py&quot;, line 140, in wait_eleVisible_pass
+    WebDriverWait(self.driver, wait_times, poll_frequency).until(EC.visibility_of_element_located(locator))
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/support/wait.py&quot;, line 80, in until
+    raise TimeoutException(message, screen, stacktrace)
+selenium.common.exceptions.TimeoutException: Message: 
+
+ Wed, 08 Jul 2020 19:49:42  INFO BasePage.py screenshot [ line:476 ] 截图成功，图片路径为：/Users/ytt/Documents/neptune/testing-neptune/ScreenShot/判断：声明弹框(5s内有效)_20200708_194941.png
+ Wed, 08 Jul 2020 19:49:42  INFO BasePage.py get_element [ line:220 ] 判断：声明弹框(5s内有效)：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/statement_dialog_agree&apos;)
+ Wed, 08 Jul 2020 19:49:42  ERROR BasePage.py get_element [ line:224 ] 查找元素-(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/statement_dialog_agree&apos;)失败！！
+Traceback (most recent call last):
+  File &quot;/Users/ytt/Documents/neptune/testing-neptune/Common/BasePage.py&quot;, line 222, in get_element
+    return self.driver.find_element(*locator)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/webdriver.py&quot;, line 276, in find_element
+    &apos;value&apos;: value})[&apos;value&apos;]
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/webdriver.py&quot;, line 321, in execute
+    self.error_handler.check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 29, in check_response
+    raise wde
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/appium/webdriver/errorhandler.py&quot;, line 24, in check_response
+    super(MobileErrorHandler, self).check_response(response)
+  File &quot;/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/selenium/webdriver/remote/errorhandler.py&quot;, line 242, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: An element could not be located on the page using the given search parameters.
+
+ Wed, 08 Jul 2020 19:49:43  INFO BasePage.py screenshot [ line:476 ] 截图成功，图片路径为：/Users/ytt/Documents/neptune/testing-neptune/ScreenShot/判断：声明弹框(5s内有效)_20200708_194942.png
+ Wed, 08 Jul 2020 19:49:43  INFO BasePage.py wait_ele_visible_pass [ line:108 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:43  INFO BasePage.py wait_ele_visible_pass [ line:114 ] 查找【聊天】按钮: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/rl_chat&apos;) 已可见,等待起始时间：2020-07-08 19:49:43.648875,等待时长：0
+ Wed, 08 Jul 2020 19:49:43  INFO BasePage.py get_element [ line:220 ] ：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/rl_chat&apos;)
+mkdir: &apos;/sdcard/.nomedia&apos;: File exists
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py Start_recording [ line:638 ] 获取到录屏的adb进程信息：&apos;  502 20311 20155   0  7:49PM ??         0:00.01 adb -s 4255484833573398 shell screenrecord --bit-rate 9000000 --time-limit 180 /sdcard/.nomedia/2020-07-08-19-49-47.mp4&apos;
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py Start_recording [ line:641 ] 启动录屏功能...
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py wait_eleVisible [ line:128 ] 点击【最新动态】tab: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/tv_notifi&apos;) 已可见,等待起始时间：2020-07-08 19:49:48.026712,等待时长：0
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py get_element [ line:220 ] 点击【最新动态】tab：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/tv_notifi&apos;)
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py click_element [ line:270 ] 点击【最新动态】tab: 元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/tv_notifi&apos;) 点击操作。
+ Wed, 08 Jul 2020 19:49:48  INFO BasePage.py wait_element_vanish [ line:163 ] 等待元素消失...
+ Wed, 08 Jul 2020 19:49:50  INFO BasePage.py wait_element_vanish [ line:169 ] 加载load文案2: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/nf_loading_img&apos;) 已消失,等待起始时间：2020-07-08 19:49:48.920933,等待时长：1
+ Wed, 08 Jul 2020 19:49:50  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:50  INFO BasePage.py wait_eleVisible [ line:128 ] 点击：通知tab: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/nf_tab_news_notify_img&apos;) 已可见,等待起始时间：2020-07-08 19:49:50.354714,等待时长：0
+ Wed, 08 Jul 2020 19:49:50  INFO BasePage.py get_element [ line:220 ] 点击：通知tab：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/nf_tab_news_notify_img&apos;)
+ Wed, 08 Jul 2020 19:49:51  INFO BasePage.py click_element [ line:270 ] 点击：通知tab: 元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/nf_tab_news_notify_img&apos;) 点击操作。
+ Wed, 08 Jul 2020 19:49:54  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:49:54  INFO BasePage.py wait_eleVisible [ line:128 ] 点击【聊天】tab: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/rl_chat&apos;) 已可见,等待起始时间：2020-07-08 19:49:54.091668,等待时长：0
+ Wed, 08 Jul 2020 19:49:54  INFO BasePage.py get_element [ line:220 ] 点击【聊天】tab：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/rl_chat&apos;)
+ Wed, 08 Jul 2020 19:49:54  INFO BasePage.py click_element [ line:270 ] 点击【聊天】tab: 元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/rl_chat&apos;) 点击操作。
+ Wed, 08 Jul 2020 19:49:54  INFO BasePage.py get_element [ line:220 ] 双击【聊天】tab：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/rl_chat&apos;)
+ Wed, 08 Jul 2020 19:50:06  INFO BasePage.py Stop_recording [ line:650 ] 终断前,指定设备 &apos;4255484833573398&apos; 所有adb进程：
+ Wed, 08 Jul 2020 19:50:06  INFO BasePage.py Stop_recording [ line:651 ]   502 20311 20155   0  7:49PM ??         0:00.01 adb -s 4255484833573398 shell screenrecord --bit-rate 9000000 --time-limit 180 /sdcard/.nomedia/2020-07-08-19-49-47.mp4
+  502 20389 20155   0  7:50PM ??         0:00.01 /bin/sh -c ps -ef | grep &quot;adb -s 4255484833573398&quot;
+  502 20391 20389   0  7:50PM ??         0:00.00 grep adb -s 4255484833573398
+
+ Wed, 08 Jul 2020 19:50:06  INFO BasePage.py Stop_recording [ line:658 ] 录屏的adb进程信息：&apos;502 20311 20155   0  7:49PM ??         0:00.01 adb -s 4255484833573398 shell screenrecord --bit-rate 9000000 --time-limit 180 /sdcard/.nomedia/2020-07-08-19-49-47.mp4&apos;
+ Wed, 08 Jul 2020 19:50:06  INFO BasePage.py Stop_recording [ line:660 ] 设备 4255484833573398 持续录屏中。。。
+ Wed, 08 Jul 2020 19:50:06  INFO BasePage.py Stop_recording [ line:662 ] 终止指定的adb为==== &apos;20311&apos;
+ Wed, 08 Jul 2020 19:50:06  INFO BasePage.py Stop_recording [ line:665 ] 终止录屏adb为：kill -9 20311
+ Wed, 08 Jul 2020 19:50:11  INFO BasePage.py Stop_recording [ line:668 ] 终断后设备 &apos;4255484833573398&apos; adb所有线程：
+ Wed, 08 Jul 2020 19:50:11  INFO BasePage.py Stop_recording [ line:669 ]   502 20413 20155   0  7:50PM ??         0:00.01 /bin/sh -c ps -ef | grep &quot;adb -s 4255484833573398&quot;
+  502 20415 20413   0  7:50PM ??         0:00.00 grep adb -s 4255484833573398
+
+ Wed, 08 Jul 2020 19:50:11  INFO BasePage.py Stop_recording [ line:672 ] 终断录屏功能成功！
+ Wed, 08 Jul 2020 19:50:11  INFO BasePage.py delete_android_video [ line:739 ] android 本地视频删除成功
+ Wed, 08 Jul 2020 19:50:11  INFO BasePage.py wait_ele_visible_pass [ line:108 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:50:11  INFO BasePage.py wait_ele_visible_pass [ line:114 ] : 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/rl_chat&apos;) 已可见,等待起始时间：2020-07-08 19:50:11.635893,等待时长：0
+ Wed, 08 Jul 2020 19:50:11  INFO BasePage.py get_element [ line:220 ] ：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/rl_chat&apos;)
+ Wed, 08 Jul 2020 19:50:11  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:50:12  INFO BasePage.py wait_eleVisible [ line:128 ] 点击导航-【设置】: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/tv_setting&apos;) 已可见,等待起始时间：2020-07-08 19:50:11.890951,等待时长：0
+ Wed, 08 Jul 2020 19:50:12  INFO BasePage.py get_element [ line:220 ] 点击导航-【设置】：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/tv_setting&apos;)
+ Wed, 08 Jul 2020 19:50:12  INFO BasePage.py click_element [ line:270 ] 点击导航-【设置】: 元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/tv_setting&apos;) 点击操作。
+ Wed, 08 Jul 2020 19:50:15  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:50:15  INFO BasePage.py wait_eleVisible [ line:128 ] 点击【登出】-确认登出: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/tv_signout&apos;) 已可见,等待起始时间：2020-07-08 19:50:15.461549,等待时长：0
+ Wed, 08 Jul 2020 19:50:15  INFO BasePage.py get_element [ line:220 ] 点击【登出】-确认登出：开始查找元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/tv_signout&apos;)
+ Wed, 08 Jul 2020 19:50:15  INFO BasePage.py click_element [ line:270 ] 点击【登出】-确认登出: 元素：(&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/tv_signout&apos;) 点击操作。
+ Wed, 08 Jul 2020 19:50:15  INFO BasePage.py wait_eleVisible [ line:122 ] 等待元素可见...
+ Wed, 08 Jul 2020 19:50:16  INFO BasePage.py wait_eleVisible [ line:128 ] 点击【登出】-确认登出: 元素 (&apos;-android uiautomator&apos;, &apos;new UiSelector().className(&quot;android.widget.TextView&quot;).textContains(&quot;登出&quot;)&apos;) 已可见,等待起始时间：2020-07-08 19:50:15.781941,等待时长：0
+ Wed, 08 Jul 2020 19:50:16  INFO BasePage.py get_element [ line:220 ] 点击【登出】-确认登出：开始查找元素：(&apos;-android uiautomator&apos;, &apos;new UiSelector().className(&quot;android.widget.TextView&quot;).textContains(&quot;登出&quot;)&apos;)
+ Wed, 08 Jul 2020 19:50:16  INFO BasePage.py click_element [ line:270 ] 点击【登出】-确认登出: 元素：(&apos;-android uiautomator&apos;, &apos;new UiSelector().className(&quot;android.widget.TextView&quot;).textContains(&quot;登出&quot;)&apos;) 点击操作。
+ Wed, 08 Jul 2020 19:50:18  INFO BasePage.py wait_ele_invisible_pass [ line:150 ] 等待元素不可见...
+ Wed, 08 Jul 2020 19:50:18  INFO BasePage.py wait_ele_invisible_pass [ line:156 ] 登出load: 元素 (&apos;id&apos;, &apos;com.suncity.sunpeople.qa:id/lcv_circleload&apos;) 已不可见,等待起始时间：2020-07-08 19:50:18.648197,等待时长：0
+ Wed, 08 Jul 2020 19:50:18  INFO conftest.py signout [ line:97 ] 登出APP
+ Wed, 08 Jul 2020 19:50:18  INFO BasePage.py get_time_interval_time [ line:520 ] 执行脚本所花时间：
+ Wed, 08 Jul 2020 19:50:18  INFO BasePage.py get_time_interval_time [ line:521 ] 0小时0分钟49秒
+</system-err></testcase></testsuite></testsuites>
